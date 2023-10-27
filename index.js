@@ -1,32 +1,40 @@
-const http = require('http');
-const fs = require('fs');
+const express = require('express');// khai bao express
 
-const server = http.createServer((req,res)=>{
-    //post => views/post.html
-    const path = req.url;
-    console.log('path:'+path)
-    let filePath = '';
-    switch(path)
-    {
-        case '/post':
-        filePath ='./views/post.html';
-        break;
-        default:
-            filePath ='./views/index.html';
-        break;
-    }
-    res.setHeader('Content-Type','text/html');
-    fs.readFile(filePath, (err, data)=>{
-        if(err)
-        {
-            console.log('error')
-        }
-        res.write(data);
-        res.end();
-    });
+const app = express();// tao instance express
+const port = process.env.PORT || 4000;// if not env default 4000
+
+
+app.use(authMiddleware);
+//  req => middle => server
+app.get('/',middlewareTest ,(req,res)=>{
+    res.send('Hello Nodejs');
 });
 
-server.listen(4000, 'localhost',()=>{
-    console.log('listening on port 4000');
-})
-//make directory
+app.get('/post', (req,res)=>{
+    res.send('Hello Posts');
+});
+
+function authMiddleware(req,res,next){
+    console.log('Auth middle ware:'+req.url);
+    if(req.url === '/post'){
+       res.send('ERROR NOT LOGIN');
+    }else{
+        next();
+    }
+}
+
+function middlewareTest(req,res,next){
+    console.log('middleware:'+req.url);
+    next();
+}
+
+
+app.listen(port, ()=>{
+    console.log("run in port " + port);
+});
+// list:get view, show:get/get view, store: post, update: path/put,
+// destroy:delete
+// create:get view, edit:get view
+// React => dang nhap => Nodejs => token
+// REact => getuser + token => nodejs 
+// REact => get User + token => refresh => req => node => user
