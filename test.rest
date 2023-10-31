@@ -1,1 +1,14 @@
-GET https://63f094335b7cf4107e22ae12.mockapi.io/users
+GET http://localhost:4000/api/users 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoibmFtIiwiYWdlIjoyMCwicGFzc3dvcmQiOiJhYmMiLCJpYXQiOjE2OTg3NjA5MzcsImV4cCI6MTY5ODc2MDk2N30.937Dagqr1eXoV5LRFOy2qHQhjLz-yEkcwxbN99JnJqM
+
+
+
+#####
+#login
+POST http://localhost:4000/api/login
+Content-Type: application/json
+
+{
+    "email":"huyhq",
+    "password":"123456789"
+}
