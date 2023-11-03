@@ -3,11 +3,22 @@ const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt')
-
+const ejs = require('ejs');
+const path = require("path");
+const session = require("express-session");
 const app = express();// tao instance express
 const port = process.env.PORT || 4000;// if not env default 4000
 dotenv.config();
+app.set('view engine','ejs');
+
 app.use(bodyParser.json());
+
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(session({
+    secret:"keyboard cat",
+    resave: false,
+    saveUninitialized:true,// được dùng cả khi không đang nhập => false => được dùng khi đang 
+}))
 
 // lay du lieu db
 const users = [{
@@ -31,71 +42,61 @@ const users = [{
 
    const posts = [
     {
-        title:'aa',
+        title:'post 1',
         user_id:1,
+    },
+    {
+        title:'post 2',
+        user_id:2,
+    },
+    {
+        title:'post 3',
+        user_id:3,
     }
    ]
 
-function authMiddleware  (req, res, next){    
-    const header = req.headers['authorization'];
-    const token = header ? header.split(" ")[1] : "";
-    // check token
-    if(!token){
-        console.log('khong cos token')
-        return res.json({message:'Unauthorized'}, 401);
-    }
-    console.log('co token');
-// check user co trong token
-    jwt.verify(token, process.env.JWT_KEY, (err, data)=>{
-        if(err){
-            console.log('loi roi token het han')
-            return res.sendStatus(401);
-        }
-        console.log('user token:', data);
-        // set user vao request
-        req.user = data
-        next();
-    });
-}
-app.get('/api/users',authMiddleware, (req, res)=>{
-// lay user dang nhap vao de xu ly ví dụ lấy bài post của user dang nhap
-    console.log(req.user);     
-    res.json(users);     
-});
-// user => ma hoa + khoa bi => token
-// req => token => middleweare => gia ma token => user => di tiep +=> o tra 401
 
-// 401 
-app.post('/api/login', (req, res)=>{
-    const user = req.body; 
-    if(!user?.email)
-    {
-        return res.json({message: "Invalid user"});
+
+app.get('/', (req,res)=>{
+    // views/index.ejs
+    let user = null;
+    if(req.session.user){
+        user = req.session.user;
     }
-    const userResult = users.find(async item =>{
-        let isRightPass = await bcrypt.compare(user.password, item.password);
-       
-        return item.email === user.email && isRightPass;
-    })
-    if(!userResult){
-        return res.json({message: "Invalid user"});
+
+    let message= null;
+    if(req.session.message){
+        message = req.session.message;//
+        req.session.message = null; //
     }
-    console.log(userResult)
-    const accessToken = jwt.sign(userResult,process.env.JWT_KEY, {expiresIn:'3h'});
-    return res.json({
-        access_token: accessToken
-    })
+    // session user
+    // user = session('user')
+    res.render('index',{ userInView : user, message: message });
 });
 
+app.post('/login', (req,res)=>{
+    
+    req.session.user = {
+        name:"huyhq",
+        age:18
+    };
 
+    req.session.message = "Login success";
+    res.redirect('/');
+});
 
+app.get("/login", (req,res)=>{
+    res.render('login');
+})
 
-
-
-
+app.get('/post', (req,res)=>{
+    res.render('post', {posts});
+});
 
 
 
 app.listen(port, ()=>{
     console.log("run in port " + port);
+    console.log(path.join(__dirname, 'public'))
+    
 });
