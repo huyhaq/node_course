@@ -1,25 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <h3>Home</h3>
-    <h3><a href="/post">Post</a></h3>
-    <% if (userInView) { %>
-        <h2>Hello <%= userInView.name %></h2>
-    <% } else {%>
-        <h2>Chua dang nhap</h2>
-        <% } %>
 
-        <% if (message) { %>
-            <h2> <%= message %></h2>
-        <% } %>
-    <form method="post" action="">
+<% block('content') %>
 
-    </form>
-</body>
-</html>
+xin chao
+
+<% endblock %>

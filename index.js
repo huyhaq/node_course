@@ -6,19 +6,24 @@ const bcrypt = require('bcrypt')
 const ejs = require('ejs');
 const path = require("path");
 const session = require("express-session");
+const flash = require('express-flash');
+const expressLayout = require('express-ejs-layouts');
+// app
 const app = express();// tao instance express
 const port = process.env.PORT || 4000;// if not env default 4000
 dotenv.config();
 app.set('view engine','ejs');
-
 app.use(bodyParser.json());
-
+app.use(flash());
+app.use(expressLayout);
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
     secret:"keyboard cat",
     resave: false,
     saveUninitialized:true,// được dùng cả khi không đang nhập => false => được dùng khi đang 
 }))
+
+
 
 // lay du lieu db
 const users = [{
@@ -64,14 +69,11 @@ app.get('/', (req,res)=>{
         user = req.session.user;
     }
 
-    let message= null;
-    if(req.session.message){
-        message = req.session.message;//
-        req.session.message = null; //
-    }
+    let message= req.flash('message');
+    
     // session user
     // user = session('user')
-    res.render('index',{ userInView : user, message: message });
+    res.render('index',{ userInView : user, message: message});
 });
 
 app.post('/login', (req,res)=>{
@@ -81,7 +83,7 @@ app.post('/login', (req,res)=>{
         age:18
     };
 
-    req.session.message = "Login success";
+    req.flash('message', "Login success");
     res.redirect('/');
 });
 
