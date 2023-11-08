@@ -23,6 +23,10 @@ app.use(session({
     saveUninitialized:true,// được dùng cả khi không đang nhập => false => được dùng khi đang 
 }))
 
+app.set('layout', 'layouts/layout');
+app.set("layout extractScripts", true)
+app.set("layout extractStyles", true)
+
 
 
 // lay du lieu db
