@@ -8,7 +8,8 @@
     "express-ejs-layouts": "^2.5.1",
     "express-flash": "^0.0.2",
     "express-session": "^1.17.3",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.0.0"
   },
   "name": "node_course",
   "description": "``` mkdir <folder name> :tạo thư mục  touch < file name> : tạo file",
