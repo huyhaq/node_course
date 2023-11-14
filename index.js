@@ -2,14 +2,13 @@ const express = require("express"); // khai bao express
 const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
 const bodyParser = require("body-parser");
-const bcrypt = require("bcrypt");
 const ejs = require("ejs");
 const path = require("path");
 const session = require("express-session");
 const flash = require("express-flash");
 const expressLayout = require("express-ejs-layouts");
 const mongoose = require("mongoose");
-const User = require("./models/user");
+const userRouter = require("./routes/userRoute");
 // app
 const app = express(); // tao instance express
 const port = process.env.PORT || 4000; // if not env default 4000
@@ -45,31 +44,15 @@ mongoose
     console.log("connect error");
   });
 
+// Route
+
 app.get("/", async (req, res) => {
- let users = null;
-  try {
-     users = await User.find({});
-  } catch (err) {
-    res.redirect("/error");
-  }
   let message = req.flash.message;
-  res.render("index", { users: users, message: message });
+  res.render("index", { message: message });
 });
 
-app.get('/users/create',(req,res)=>{
-    res.render("users/create");
-})
+app.use('/users', userRouter);
 
-app.post("/users/store", async (req, res) => {
-  // views/index.ejs
-  console.log(req.body)
-  const pass = bcrypt.hashSync(req.body.password, 10);
-  let dataCreate = req.body;
-  dataCreate.password = pass;
-  await User.create(dataCreate);
-  req.flash("message", "Create success");
-  res.redirect("/");
-});
 app.get("/error", async (req, res) => {
     res.send("error");
   });

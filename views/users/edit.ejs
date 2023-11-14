@@ -1,0 +1,44 @@
+
+<div style="margin-top: 300px">
+  <h3>Edit User</h3>
+</div>
+<form action="/users/update/<%= user._id %>" method="post" >
+  <div class="form-control">
+    <input
+      class="form-control"
+      type="text"
+      name="name"
+      value="<%= user.name %>"
+      placeholder="Enter name"
+    />
+  </div>
+  <div class="form-control">
+    <input
+      class="form-control"
+      type="text"
+      name="email"
+      value="<%= user.email %>"
+      placeholder="Enter email"
+    />
+  </div>
+  <div class="form-control">
+    <input
+      class="form-control"
+      type="password"
+      name="password"
+      placeholder="Enter password"
+    />
+  </div>
+  <div class="form-control">
+    <input
+      class="form-control"
+      type="number"
+      name="age"
+      value="<%= user.age %>"
+      placeholder="Enter age"
+    />
+  </div>
+  <div class="form-control">
+    <button type="submit">Submit</button>
+  </div>
+</form>
