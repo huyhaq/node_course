@@ -26,7 +26,8 @@ class UserController {
     async storeUser(req, res) {
       // views/index.ejs
       // view => router => middleware => controller => service => model => controller =>view
-      const user = await this.userService.store(req);
+      let userService = new UserService();
+      const user = await userService.store(req);
       req.flash("message", "Create success");
       res.redirect("/");
     }

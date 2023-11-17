@@ -8,7 +8,17 @@ const session = require("express-session");
 const flash = require("express-flash");
 const expressLayout = require("express-ejs-layouts");
 const mongoose = require("mongoose");
+const passport = require("passport");
+const Category = require("./models/category");
+const User = require("./models/user");
+const LocalStrategy = require("passport-local").Strategy;
+const bcrypt = require("bcrypt");
+
+// router
 const userRouter = require("./routes/userRoute");
+const homeRoute = require("./routes/homeRoute");
+const authRoute = require("./routes/authRoute");
+
 // app
 const app = express(); // tao instance express
 const port = process.env.PORT || 4000; // if not env default 4000
@@ -20,6 +30,9 @@ app.use(expressLayout);
 
 app.set("layout", "layouts/layout");
 
+app.set("layout extractStyles", true)
+app.set("layout extractScripts", true)
+
 app.use(express.static(path.join(__dirname, "public")));
 app.use(
   session({
@@ -29,7 +42,7 @@ app.use(
   })
 );
 const mongoURL = "mongodb://localhost:27017/ecomerge";
-// connect db
+
 
 mongoose
   .connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -44,31 +57,74 @@ mongoose
     console.log("connect error");
   });
 
-// Route
+  // passport
+  passport.use(new LocalStrategy(
+    async function(username, password, done) {
+      console.log(username)
+      const user =  await User.findOne({ email: username });
+      if (!user) { return done(null, false, {message: 'không có người dùng.'}); } // không có người dùng
+      // pass: 1234556 => ma hoa => $2b$10$DrQYAR2nZLeoSGYPsIwujO
+      // pass mahoa: $2b$10$DrQYAR2nZLeoSGYPsIwujO3qHnuy./DnW7P1kt3dQ/Iiq31Aa4/N6
+      // const status = await bcrypt.compare(password, user.password);
+      // status = true , passs=> ma hoa = pass db
+      // status = sai
+      console.log(user)
+      // if (!status) { return done(null, false, {message: 'password sai.'}); } // pass không đúng
+      return done(null, user); // đăng nhập thành công
+    }
+  ));
 
-app.get("/", async (req, res) => {
-  let message = req.flash.message;
-  res.render("index", { message: message });
+// cho phép lưu lại thông tin xác thực mỗi request nhưng không xác thực mỗi request
+app.use(passport.initialize());
+// cho phép passport được sử dụng session 
+app.use(passport.session());
+// cách lưu trạng thái xác thực
+passport.serializeUser(function(user,done){
+  done(null, user._id);
+});
+// lấy thông tin người dùng
+passport.deserializeUser(async function(id,done){
+  const user = await User.findById(id);
+  done(null, user);
+})
+
+// Route
+app.use(async (req, res, next) => {
+   const categories = await Category.find({}); 
+   res.locals.categories = categories;
+   next();
 });
 
+
+
+app.use('/',homeRoute);
+app.use('/',authRoute);
 app.use('/users', userRouter);
+
+
+
+function checkLogin(req, res, next) {
+  if(req.isAuthenticated()){
+    next();
+  }else{
+    res.redirect('/login');
+  }
+}
+
 
 app.get("/error", async (req, res) => {
     res.send("error");
   });
-app.post("/login", (req, res) => {
-  req.session.user = {
-    name: "huyhq",
-    age: 18,
-  };
-  req.flash("message", "Login success");
-  res.redirect("/");
-});
 
-app.get("/login", (req, res) => {
-  res.render("login");
-});
+  app.get("/post",checkLogin, async (req, res) => {
+    res.render("post");
+  });
 
-app.get("/post", (req, res) => {});
+app.get('/logout', (req, res) => {
+  req.logout(()=>{
+   res.redirect('/');
+  });
+
+})
 
 // viet edit, update`
