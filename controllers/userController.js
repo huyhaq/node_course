@@ -46,8 +46,6 @@ class UserController {
       const user = await User.findById(id);
       if (user) {
         res.render("users/show", { user });
-
-        
       } else {
         req.flash("message", "user not found");
         res.redirect("/");
