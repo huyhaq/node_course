@@ -65,11 +65,11 @@ mongoose
       if (!user) { return done(null, false, {message: 'không có người dùng.'}); } // không có người dùng
       // pass: 1234556 => ma hoa => $2b$10$DrQYAR2nZLeoSGYPsIwujO
       // pass mahoa: $2b$10$DrQYAR2nZLeoSGYPsIwujO3qHnuy./DnW7P1kt3dQ/Iiq31Aa4/N6
-      // const status = await bcrypt.compare(password, user.password);
+      const status = await bcrypt.compare(password, user.password);
       // status = true , passs=> ma hoa = pass db
       // status = sai
-      console.log(user)
-      // if (!status) { return done(null, false, {message: 'password sai.'}); } // pass không đúng
+      console.log(status)
+      if (!status) { return done(null, false, {message: 'password sai.'}); } // pass không đúng
       return done(null, user); // đăng nhập thành công
     }
   ));
@@ -110,7 +110,6 @@ function checkLogin(req, res, next) {
     res.redirect('/login');
   }
 }
-
 
 app.get("/error", async (req, res) => {
     res.send("error");
