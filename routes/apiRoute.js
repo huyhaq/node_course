@@ -2,5 +2,6 @@ const express = require("express");
 const router = express.Router();
 const apiController = require("../controllers/apiController");
 
-router.get("/login", apiController.login);
+router.post("/login", apiController.login);
+router.post("/resfresh", apiController.refreshToken);
 module.exports = router;

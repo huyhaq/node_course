@@ -1,7 +1,6 @@
-GET http://localhost:4000/api/users 
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoibmFtIiwiYWdlIjoyMCwicGFzc3dvcmQiOiJhYmMiLCJpYXQiOjE2OTg3NjA5MzcsImV4cCI6MTY5ODc2MDk2N30.937Dagqr1eXoV5LRFOy2qHQhjLz-yEkcwxbN99JnJqM
-
-
+POST http://localhost:4000/api/resfresh
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTU3ODQxYTM5NDdhNjk5YjA5ZWIzMmMiLCJuYW1lIjoiYUBnbWFpbC5jb20iLCJlbWFpbCI6ImFxQGdtYWlsLmNvbSIsInBhc3N3b3JkIjoiJDJiJDEwJHladUlQNnd5dHVzUTNtRUNNMDFTVi5QTTltNm9TWnRwQlZGc0MwTGEvUDZOODVtQXVNOUx5IiwiYWdlIjoxMiwiX192IjowLCJpYXQiOjE3MDA0ODk4OTZ9.tEkYPTTUoGKC1r552C8gXRMcx2otzgrPPNkNksFPWOs
 
 #####
 #login
@@ -9,6 +8,6 @@ POST http://localhost:4000/api/login
 Content-Type: application/json
 
 {
-    "email":"huyhq",
+    "email":"aq@gmail.com",
     "password":"123456789"
 }
