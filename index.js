@@ -11,6 +11,7 @@ const mongoose = require("mongoose");
 const Category = require("./models/category");
 const User = require("./models/user");
 const bcrypt = require("bcrypt");
+const cors = require('cors');
 
 // router
 const userRouter = require("./routes/userRoute");
@@ -27,6 +28,7 @@ app.use(flash());
 app.use(expressLayout);
 
 const mongoURL = "mongodb://localhost:27017/ecomerge";
+app.use(cors());
 
 
 mongoose
