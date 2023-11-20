@@ -100,7 +100,7 @@ app.use(async (req, res, next) => {
 app.use('/',homeRoute);
 app.use('/',authRoute);
 app.use('/users', userRouter);
-
+app.use('/api', userRouter);
 
 
 function checkLogin(req, res, next) {
