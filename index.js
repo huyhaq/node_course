@@ -8,16 +8,13 @@ const session = require("express-session");
 const flash = require("express-flash");
 const expressLayout = require("express-ejs-layouts");
 const mongoose = require("mongoose");
-const passport = require("passport");
 const Category = require("./models/category");
 const User = require("./models/user");
-const LocalStrategy = require("passport-local").Strategy;
 const bcrypt = require("bcrypt");
 
 // router
 const userRouter = require("./routes/userRoute");
 const homeRoute = require("./routes/homeRoute");
-const authRoute = require("./routes/authRoute");
 const apiRoute = require("./routes/apiRoute");
 
 // app
@@ -62,9 +59,6 @@ app.get("/error", async (req, res) => {
 
 
 app.get('/logout', (req, res) => {
-  req.logout(()=>{
-   res.redirect('/');
-  });
 
 })
 

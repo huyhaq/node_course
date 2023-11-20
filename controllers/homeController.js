@@ -1,10 +1,13 @@
+const User = require("../models/user");
 
 class HomeController{
 
     async index(req, res) {
         let message = req.flash.message;
-        console.log('userLogin: ',req?.user)
-        res.render("index", { message: message });
+       const users = await User.find({});
+        res.json({
+            users
+        })
     }
 }
 const homeController = new HomeController();

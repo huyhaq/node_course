@@ -11,3 +11,8 @@ Content-Type: application/json
     "email":"aq@gmail.com",
     "password":"123456789"
 }
+#####
+GET http://localhost:4000/user
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NTU3ODQxYTM5NDdhNjk5YjA5ZWIzMmMiLCJuYW1lIjoiYUBnbWFpbC5jb20iLCJlbWFpbCI6ImFxQGdtYWlsLmNvbSIsInBhc3N3b3JkIjoiJDJiJDEwJHladUlQNnd5dHVzUTNtRUNNMDFTVi5QTTltNm9TWnRwQlZGc0MwTGEvUDZOODVtQXVNOUx5IiwiYWdlIjoxMiwiX192IjowLCJpYXQiOjE3MDA0OTA1NzgsImV4cCI6MTcwMDUwMTM3OH0.X_Fb_B7vS9cDkKQ169OgCJzycCGNWwwF3jurudPCxg4
+#####
