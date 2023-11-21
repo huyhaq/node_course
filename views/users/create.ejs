@@ -1,12 +1,23 @@
 <div style="padding-top: 100px">
   <h3>Create User</h3>
 </div>
+
+<% if (error && error.length > 0) { %>
+      <% error.forEach(element => { %>
+
+        <p><%= element.message %></p>
+
+      <% }) %>
+<% } %>
+
+
 <form action="/users/store" method="post" >
   <div class="form-control">
     <input
       class="form-control"
       type="text"
       name="name"
+      value="<%= data?.name %>"
       placeholder="Enter name"
     />
   </div>
@@ -15,6 +26,7 @@
       class="form-control"
       type="text"
       name="email"
+      value="<%= data?.email %>"
       placeholder="Enter email"
     />
   </div>
@@ -31,6 +43,7 @@
       class="form-control"
       type="number"
       name="age"
+      value="<%= data?.age %>"
       placeholder="Enter age"
     />
   </div>

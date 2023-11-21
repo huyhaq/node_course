@@ -43,7 +43,10 @@ app.use(
 );
 const mongoURL = "mongodb://localhost:27017/ecomerge";
 
-
+// cho phép lưu lại thông tin xác thực mỗi request nhưng không xác thực mỗi request
+app.use(passport.initialize());
+// cho phép passport được sử dụng session 
+app.use(passport.session());
 mongoose
   .connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
@@ -58,7 +61,7 @@ mongoose
   });
 
   // passport
-  passport.use(new LocalStrategy(
+  const localStrategy = new LocalStrategy(
     async function(username, password, done) {
       console.log(username)
       const user =  await User.findOne({ email: username });
@@ -72,12 +75,11 @@ mongoose
       if (!status) { return done(null, false, {message: 'password sai.'}); } // pass không đúng
       return done(null, user); // đăng nhập thành công
     }
-  ));
+  );
 
-// cho phép lưu lại thông tin xác thực mỗi request nhưng không xác thực mỗi request
-app.use(passport.initialize());
-// cho phép passport được sử dụng session 
-app.use(passport.session());
+  passport.use(localStrategy);
+
+
 // cách lưu trạng thái xác thực
 passport.serializeUser(function(user,done){
   done(null, user._id);
@@ -112,6 +114,7 @@ function checkLogin(req, res, next) {
 }
 
 app.get("/error", async (req, res) => {
+
     res.send("error");
   });
 
@@ -120,6 +123,7 @@ app.get("/error", async (req, res) => {
   });
 
 app.get('/logout', (req, res) => {
+  res.session.user = null;
   req.logout(()=>{
    res.redirect('/');
   });
@@ -127,3 +131,14 @@ app.get('/logout', (req, res) => {
 })
 
 // viet edit, update`
+app.post('/login',(req,res)=>{
+    const user = req.body;
+    const userResult = User.findOne({email: user.email});
+    if(userResult && bcrypt.compareSync(user.password, userResult.password)){
+      req.session.user = userResult;
+  
+      res.redirect('/')
+    }else{
+      res.redirect('/login')
+    }
+});

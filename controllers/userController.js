@@ -21,11 +21,13 @@ class UserController {
         res.render("users/index", { users: users, message: message });
       }
     async createUser(req, res) {
-      res.render("users/create");
+      const error = req.session.error;
+      const data = req.session.data;
+
+      res.render("users/create",{error: error, data: data});
     }
     async storeUser(req, res) {
-      // views/index.ejs
-      // view => router => middleware => controller => service => model => controller =>view
+
       let userService = new UserService();
       const user = await userService.store(req);
       req.flash("message", "Create success");
