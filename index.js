@@ -9,9 +9,11 @@ import flash from "express-flash";
 import expressLayout from "express-ejs-layouts";
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
-
+import homeRoute from "./routes/homeRoute.js";
+// new 
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 // router
-import homeRoute from "./routes/homeRoute";
 
 // app
 const app = express(); // tao instance express
@@ -27,7 +29,18 @@ app.set("layout", "layouts/layout");
 app.set("layout extractStyles", true)
 app.set("layout extractScripts", true)
 
-app.use(express.static(path.join(__dirname, "public")));
+// app.use(express.static(path.join(__dirname, "public")));
+// Get the current module's URL
+const currentFileUrl = import.meta.url;
+
+// Convert the URL to a file path
+const currentFilePath = fileURLToPath(currentFileUrl);
+
+// Get the directory name
+const currentDir = dirname(currentFilePath);
+
+// Set up static files middleware
+app.use(express.static(join(currentDir, 'public')));
 
 app.use(
   session({
@@ -44,22 +57,15 @@ mongoose
     console.log("connect success");
     app.listen(port, () => {
       console.log("run in port " + port);
-      console.log(path.join(__dirname, "public"));
     });
   })
   .catch((err) => {
     console.log("connect error");
   });
-// app.use('/',homeRoute);
+app.use('/', homeRoute);
 
 app.get("/error", async (req, res) => {
     res.send("error");
  });
-app.get("/user",(req,res)=>{
-  const userSearch = ;
 
-  res.status(200).json({
-    user_search:userSearch
-  })
-});
 
