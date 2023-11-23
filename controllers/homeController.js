@@ -8,4 +8,4 @@ class HomeController{
     }
 }
 const homeController = new HomeController();
-module.exports = homeController;
+export default homeController;
