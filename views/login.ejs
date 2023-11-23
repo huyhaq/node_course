@@ -2,11 +2,20 @@
     .login-form {
         margin-top:100px;
     }
+    .mt-100{
+        padding-top:100px;
+    }
 </style>
-
+<div class="mt-100">
+    <% if (messages.error) { %>
+        <div class="alert alert-danger">
+          <%= messages.error %>
+        </div>
+      <% } %>
+</div>
     <h1>Login</h1>
     <form action="/login" method="post" class="login-form">
-        <input type="text" name="username" value="huyhq">
+        <input type="text" name="email" >
         <input type="password" name="password">
         <input type="submit" value="Login">
     </form>

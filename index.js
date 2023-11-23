@@ -18,20 +18,21 @@ const bcrypt = require("bcrypt");
 const userRouter = require("./routes/userRoute");
 const homeRoute = require("./routes/homeRoute");
 const authRoute = require("./routes/authRoute");
+const { log } = require("console");
 
 // app
 const app = express(); // tao instance express
 const port = process.env.PORT || 4000; // if not env default 4000
 dotenv.config();
 app.set("view engine", "ejs");
-app.use(bodyParser.urlencoded({extended:true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(flash());
 app.use(expressLayout);
 
 app.set("layout", "layouts/layout");
 
-app.set("layout extractStyles", true)
-app.set("layout extractScripts", true)
+app.set("layout extractStyles", true);
+app.set("layout extractScripts", true);
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(
@@ -43,10 +44,9 @@ app.use(
 );
 const mongoURL = "mongodb://localhost:27017/ecomerge";
 
-// cho phép lưu lại thông tin xác thực mỗi request nhưng không xác thực mỗi request
 app.use(passport.initialize());
-// cho phép passport được sử dụng session 
 app.use(passport.session());
+
 mongoose
   .connect(mongoURL, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
@@ -60,85 +60,107 @@ mongoose
     console.log("connect error");
   });
 
-  // passport
-  const localStrategy = new LocalStrategy(
-    async function(username, password, done) {
-      console.log(username)
-      const user =  await User.findOne({ email: username });
-      if (!user) { return done(null, false, {message: 'không có người dùng.'}); } // không có người dùng
-      // pass: 1234556 => ma hoa => $2b$10$DrQYAR2nZLeoSGYPsIwujO
-      // pass mahoa: $2b$10$DrQYAR2nZLeoSGYPsIwujO3qHnuy./DnW7P1kt3dQ/Iiq31Aa4/N6
+// passport
+const localStrategy = new LocalStrategy(
+  { usernameField: "email" ,passwordField: "password"},
+  async function (email, password, done) {
+    try {
+      console.log(email, password);
+      const user = await User.findOne({ email: email });
+      if (!user) {
+        return done(null, false, { message: "không có người dùng." });
+      }
       const status = await bcrypt.compare(password, user.password);
-      // status = true , passs=> ma hoa = pass db
-      // status = sai
-      console.log(status)
-      if (!status) { return done(null, false, {message: 'password sai.'}); } // pass không đúng
+      if (!status) {
+        return done(null, false, { message: "password sai." });
+      } // pass không đúng
+
       return done(null, user); // đăng nhập thành công
+    } catch (error) {
+      return done(error);
     }
-  );
+  }
+);
 
-  passport.use(localStrategy);
-
+passport.use(localStrategy);
 
 // cách lưu trạng thái xác thực
-passport.serializeUser(function(user,done){
+passport.serializeUser(function (user, done) {
   done(null, user._id);
 });
 // lấy thông tin người dùng
-passport.deserializeUser(async function(id,done){
-  const user = await User.findById(id);
-  done(null, user);
-})
+passport.deserializeUser(async function (id, done) {
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (error) {
+    done(error);
+  }
+});
 
 // Route
 app.use(async (req, res, next) => {
-   const categories = await Category.find({}); 
-   res.locals.categories = categories;
-   next();
+  const categories = await Category.find({});
+  res.locals.categories = categories;
+  next();
 });
 
+app.post(
+  "/login",
+  (req, res, next) => {
+    const {email, password} = req.body;
+    if(!email || !password) {
+      req.flash(
+       "error","email và password phải điền đầy đủ",
+      )
+      return res.redirect("/login");
+    };
+    next();
+  }
+  ,
+  passport.authenticate("local", {
+    successRedirect: "/",
+    failureRedirect: "/login",
+    failureFlash: true,
+  })
+);
 
-
-app.use('/',homeRoute);
-app.use('/',authRoute);
-app.use('/users', userRouter);
-
-
+app.use("/", homeRoute);
+app.use("/", authRoute);
+app.use("/users", userRouter);
 
 function checkLogin(req, res, next) {
-  if(req.isAuthenticated()){
+  if (req.isAuthenticated()) {
     next();
-  }else{
-    res.redirect('/login');
+  } else {
+    res.redirect("/login");
   }
 }
 
 app.get("/error", async (req, res) => {
+  res.send("error");
+});
 
-    res.send("error");
-  });
+app.get("/post", checkLogin, async (req, res) => {
+  res.render("post");
+});
 
-  app.get("/post",checkLogin, async (req, res) => {
-    res.render("post");
-  });
-
-app.get('/logout', (req, res) => {
+app.get("/logout", (req, res) => {
   res.session.user = null;
-  req.logout(()=>{
-   res.redirect('/');
+  req.logout(() => {
+    res.redirect("/");
   });
-
-})
+});
 
 // viet edit, update`
-app.post('/login',(req,res)=>{
-    const user = req.body;
-    const userResult = User.findOne({email: user.email});
-    if(userResult && bcrypt.compareSync(user.password, userResult.password)){
-      req.session.user = userResult;
-  
-      res.redirect('/')
-    }else{
-      res.redirect('/login')
-    }
+app.post("/login", (req, res) => {
+  const user = req.body;
+  const userResult = User.findOne({ email: user.email });
+  if (userResult && bcrypt.compareSync(user.password, userResult.password)) {
+    req.session.user = userResult;
+
+    res.redirect("/");
+  } else {
+    res.redirect("/login");
+  }
 });
